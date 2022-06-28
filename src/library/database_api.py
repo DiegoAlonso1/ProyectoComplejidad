@@ -1,6 +1,4 @@
 import psycopg2
-from configparser import ConfigParser
-from library.paths import GetPath
 
 class DB_API:
     # constants
@@ -19,26 +17,15 @@ class DB_API:
     TARGET_LONGITUDE = 10000000000
     TARGET_LATITUDE = 100000000000
 
-    def __init__(self, file='%CONF_DIR%/connection_database.ini', section='postgresql'):
-        self.fileConfig = GetPath(file)
-        self.sectionConfig = section
+    def __init__(self):
         self.initDbConnection()
 
-    def __config(self):
-        parser = ConfigParser()
-        parser.read(self.fileConfig)
-        db = {}
-        if parser.has_section(self.sectionConfig):
-            params = parser.items(self.sectionConfig)
-            for param in params:
-                db[param[0]] = param[1]
-        else:
-            raise Exception('Section {0} not found in file {1}'.format(self.sectionConfig, self.fileConfig))
-        return db
-
     def initDbConnection(self):
-        dbConfig = self.__config()
-        self.connection = psycopg2.connect(**dbConfig)
+        self.connection = psycopg2.connect(
+            host="bwmc2spjnkl3asahsdwf-postgresql.services.clever-cloud.com", 
+            database="bwmc2spjnkl3asahsdwf", 
+            user="ui9vqx1cbdowhfoap3dq", 
+            password="9wNAizIxMMQtBryr1tOZ")
         self.cur = self.connection.cursor()
 
     def endDbConnection(self):
@@ -95,7 +82,6 @@ class DB_API:
             return []
 
         flagsForQuery = self.__generateQueryByFlags(flags)
-        print(flagsForQuery)
 
         query=f"SELECT {flagsForQuery} FROM \"hh_2po_4pgr\" WHERE source="+str(source)+" and target="+str(target)
   
@@ -116,7 +102,6 @@ class DB_API:
             return []
 
         flagsForQuery = self.__generateQueryByFlags(flags)
-        print(flagsForQuery)
 
         query=f"SELECT {flagsForQuery} FROM \"hh_2po_4pgr\" WHERE source="+str(source)
   
@@ -137,7 +122,6 @@ class DB_API:
             return []
 
         flagsForQuery = self.__generateQueryByFlags(flags)
-        print(flagsForQuery)
 
         query=f"SELECT {flagsForQuery} FROM \"hh_2po_4pgr\""
   

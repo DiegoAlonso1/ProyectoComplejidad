@@ -133,3 +133,4 @@ ignores/
 antiguo/
 data/antiguo/
 src/antiguo/
+src/library/*.ipynb
