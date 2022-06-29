@@ -5,11 +5,11 @@
   const urlgraph = "graph";
   const graph = await d3.json(urlgraph);
 
-  const s = Math.floor(Math.random() * graph.g.length);
+  var s = Math.floor(Math.random() * graph.g.length);
   var t = Math.floor(Math.random() * graph.g.length);
-  const urlpaths = `paths/${s}/${t}`
-  const paths = await d3.json(urlpaths);
-  console.log('s: ' + s + ', t: ' + t);
+  const urlpaths = `paths/${s}/${t}`;
+  var paths = await d3.json(urlpaths);
+  // console.log('s: ' + s + ', t: ' + t);
   var excludeList = [];
 
   // config
@@ -77,11 +77,10 @@
     }
     i++;
   }
-  render(edges, 'white', 2)
+  render(edges, 'white', 1)
 
-  function dealWithPath(path, color, lw) {
+  async function dealWithPath(path, color, lw) {
     excludeList = [];
-    console.log(color + ', ' + path);
     // la base de datos de nuestros nodos incluye nodos que no están en la pista, por lo que puede darse el caso 
     // de que no se encuentre un camino entre un nodo origen y el destino, por ello reasignamos el nodo destino
     while ((path[t] === -1 || excludeList.includes(t)) && excludeList.length != 90000) {
@@ -99,26 +98,127 @@
     render(points, color, lw)
   }
 
-  dealWithPath(paths.path2, "red", 2)
+  dealWithPath(paths.path2, "purple", 2)
   dealWithPath(paths.path1, "orange", 6)
   dealWithPath(paths.bestpath, "darkgreen", 3)
 
+  function cleanCanvas() {
+    ctx.clearRect(1, 1, box.width, box.height);
+    render(edges, 'white', 1)
+  }
+
   function drawPoints() {
+    drawOriginPoint();
+    drawTargetPoint();
+  }
+
+  function drawOriginPoint() {
     ctx.fillStyle = "LimeGreen";
     ctx.fillRect(x(graph.loc[s]) - 5, y(graph.loc[s]) - 5, 10, 10)
     ctx.strokeStyle = "Green";
     ctx.strokeRect(x(graph.loc[s]) - 5, y(graph.loc[s]) - 5, 10, 10)
+  }
+  function drawTargetPoint() {
     ctx.fillStyle = "Orange";
     ctx.fillRect(x(graph.loc[t]) - 5, y(graph.loc[t]) - 5, 10, 10)
     ctx.strokeStyle = "OrangeRed";
     ctx.strokeRect(x(graph.loc[t]) - 5, y(graph.loc[t]) - 5, 10, 10)
   }
+  
+  async function getNearestNode(x, y) {
+    let min = 99999;
+    let minNode = -1;
+    for (let i = 1; i < graph.loc.length; i++) {
+      let distance = Math.sqrt(Math.pow(x - graph.loc[i][0], 2) + Math.pow(y - graph.loc[i][1], 2));
+      if (distance < min) {
+        min = distance;
+        minNode = i;
+      }
+    }
+    return minNode;
+  }
 
-  // Funciones y eventos
+  var originBtn = document.getElementById("btn-origin");
+  var targetBtn = document.getElementById("btn-target");
+  var clearBtn = document.getElementById("btn-clear")
+  var findBtn = document.getElementById("btn-find");
+  var warningText = document.getElementById("warning-text");
+  let searchingOrigin = false;
+  let searchingTarget = false;
+  let cleaned = false;
 
-  // Empezamos
+  originBtn.addEventListener("click", function () {
+    if (searchingTarget) {
+      targetBtn.click();
+    }
+    originBtn.blur();
+    searchingOrigin = !searchingOrigin;
+  });
+
+  targetBtn.addEventListener("click", function () {
+    if (searchingOrigin) {
+      originBtn.click();
+    }
+    targetBtn.blur();
+    searchingTarget = !searchingTarget;
+  });
+
+  async function onFindBtnClicked() {
+    if (searchingOrigin) originBtn.click();
+    if (searchingTarget) targetBtn.click();
+    const newUrlpaths = `paths/${s}/${t}`;
+    paths = await d3.json(newUrlpaths);
+    cleanCanvas();
+    dealWithPath(paths.path2, "purple", 2)
+    dealWithPath(paths.path1, "orange", 6)
+    dealWithPath(paths.bestpath, "darkgreen", 3)
+    cleaned = false;
+  }
+
+  findBtn.addEventListener("click", function () {
+    onFindBtnClicked();
+  });
+
+  clearBtn.addEventListener("click", function () {
+    cleanCanvas();
+    cleaned = true;
+    warningText.style.visibility = "hidden";
+    drawOriginPoint();
+    drawTargetPoint();
+  });
+
+  async function onCanvasClick(e) {
+    if (!searchingOrigin && !searchingTarget) return;
+    if (!cleaned) {
+      warningText.style.visibility = "visible";
+      return;
+    }
+
+    coordsX = d3.scaleLinear()
+      .domain([margin.left, size * xpro])
+      .range(extentx);
+    coordsY = d3.scaleLinear()
+      .domain([size * ypro, margin.top])
+      .range(extenty);
+
+    if (searchingOrigin) {
+      let origin = await getNearestNode(coordsX(e.offsetX), coordsY(e.offsetY));
+      // console.log('origin: ' + origin);
+      s = origin;
+      clearBtn.click();
+      originBtn.click();
+    }
+    else if (searchingTarget) {
+      let target = await getNearestNode(coordsX(e.offsetX), coordsY(e.offsetY));
+      // console.log('target: ' + target);
+      t = target;
+      clearBtn.click();
+      targetBtn.click();
+    }
+  }
+
+  document.getElementById("canvitas").addEventListener("click", function (e) {
+    onCanvasClick(e);
+  });
 
 })();
-
-/* vim: set tabstop=2:softtabstop=2:shiftwidth=2:noexpandtab */
-

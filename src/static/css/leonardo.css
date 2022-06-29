@@ -13,5 +13,32 @@ html {
 	width: 100%;
 }
 
+.btn-container {
+	width: 97%;
+	position: fixed;
+	left: 1.5%;
+	bottom: 30px;
+	display: flex;
+	justify-content: space-between;
+}
+
+.btn-right-container {
+	display: flex;
+	gap: 15px;
+}
+
+.btn {
+	font-size: 20px !important;
+}
+
+#warning-text {
+	position: fixed;
+	right: 1.5%;
+	bottom: 80px;
+	color: red;
+	font-size: 20px;
+	visibility: hidden;
+}
+
 /* vim: set tabstop=2:softtabstop=2:shiftwidth=2:noexpandtab */
 

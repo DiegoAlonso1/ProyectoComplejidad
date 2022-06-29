@@ -2,14 +2,27 @@
 <html>
 	<head>
 		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Algorithmic Complexity TF Template</title>
 		<link href="css/leonardo.css" rel="stylesheet">
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+  </head>
 	</head>
 	<body>
 		<div id="box">
 			<canvas id="canvitas"></canvas>
 		</div>
+		<div class="btn-container">
+			<button id="btn-clear" type="button" class="btn btn-primary btn" data-bs-toggle="button">Limpiar</button>
+			<div class="btn-right-container">
+				<button id="btn-origin" type="button" class="btn btn-outline-primary btn" data-bs-toggle="button">Origen</button>
+				<button id="btn-target" type="button" class="btn btn-outline-primary btn" data-bs-toggle="button">Destino</button>
+				<button id="btn-find" type="button" class="btn btn-primary btn" data-bs-toggle="button">Encontrar</button>
+			</div>
+		</div>
+		<div id="warning-text">Primero debes limpiar el canvas</div>
 		<script src="js/d3.min.js"></script>
 		<script src="js/powerful.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
 	</body>
 </html>
