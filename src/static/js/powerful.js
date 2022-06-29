@@ -6,9 +6,11 @@
   const graph = await d3.json(urlgraph);
 
   const s = Math.floor(Math.random() * graph.g.length);
-  const t = Math.floor(Math.random() * graph.g.length);
+  var t = Math.floor(Math.random() * graph.g.length);
   const urlpaths = `paths/${s}/${t}`
   const paths = await d3.json(urlpaths);
+  console.log('s: ' + s + ', t: ' + t);
+  var excludeList = [];
 
   // config
 
@@ -39,7 +41,7 @@
   const extenty = d3.extent(graph.loc, d => d[1]);
   const w = extentx[1] - extentx[0];
   const h = extenty[1] - extenty[0];
-  
+
   let size = 0, xpro = 1, ypro = 1;
   size = (w > h) ? (box.bwidth - margin.right) : (box.bheight - margin.bottom);
   xpro = (w > h) ? 1 : (w / h);
@@ -76,28 +78,41 @@
     i++;
   }
   render(edges, 'white', 2)
-  
-  function dealWithPath(path, color) {
+
+  function dealWithPath(path, color, lw) {
+    excludeList = [];
+    console.log(color + ', ' + path);
+    // la base de datos de nuestros nodos incluye nodos que no están en la pista, por lo que puede darse el caso 
+    // de que no se encuentre un camino entre un nodo origen y el destino, por ello reasignamos el nodo destino
+    while ((path[t] === -1 || excludeList.includes(t)) && excludeList.length != 90000) {
+      excludeList.push(t);
+      t = t < 96509 ? t + 1 : t - 1;
+    }
+
+    drawPoints();
     let head = t;
     points = []
     while (path[head] != -1) {
       points.push([graph.loc[head], graph.loc[path[head]]]);
       head = path[head];
     }
-    render(points, color, 4)
+    render(points, color, lw)
   }
-  dealWithPath(paths.bestpath, "darkgreen")
-  // dealWithPath(paths.path1, "orange")
-  // dealWithPath(paths.path2, "red")
 
-  ctx.fillStyle = "LimeGreen";
-  ctx.fillRect(x(graph.loc[s]) - 5, y(graph.loc[s]) - 5, 10, 10)
-  ctx.strokeStyle = "Green";
-  ctx.strokeRect(x(graph.loc[s]) - 5, y(graph.loc[s]) - 5, 10, 10)
-  ctx.fillStyle = "Orange";
-  ctx.fillRect(x(graph.loc[t]) - 5, y(graph.loc[t]) - 5, 10, 10)
-  ctx.strokeStyle = "OrangeRed";
-  ctx.strokeRect(x(graph.loc[t]) - 5, y(graph.loc[t]) - 5, 10, 10)
+  dealWithPath(paths.path2, "red", 2)
+  dealWithPath(paths.path1, "orange", 6)
+  dealWithPath(paths.bestpath, "darkgreen", 3)
+
+  function drawPoints() {
+    ctx.fillStyle = "LimeGreen";
+    ctx.fillRect(x(graph.loc[s]) - 5, y(graph.loc[s]) - 5, 10, 10)
+    ctx.strokeStyle = "Green";
+    ctx.strokeRect(x(graph.loc[s]) - 5, y(graph.loc[s]) - 5, 10, 10)
+    ctx.fillStyle = "Orange";
+    ctx.fillRect(x(graph.loc[t]) - 5, y(graph.loc[t]) - 5, 10, 10)
+    ctx.strokeStyle = "OrangeRed";
+    ctx.strokeRect(x(graph.loc[t]) - 5, y(graph.loc[t]) - 5, 10, 10)
+  }
 
   // Funciones y eventos
 

@@ -46,37 +46,39 @@ def myGraphNodes():
 #                     G[i * m + j].append((u * m + v, r.randint(1, 345353)))
 #     return G, Loc
 
-# def bfs(G, s):
-#   n = len(G)
-#   visited = [False]*n
-#   path = [-1]*n # parent
-#   queue = [s]
-#   visited[s] = True
+def bfs(G, s):
+  n = len(G)
+  visited = [False]*n
+  path = [-1]*n # parent
+  queue = [s]
+  visited[s] = True
 
-#   while queue:
-#     u = queue.pop(0)
-#     for v, _ in G[u]:
-#       if not visited[v]:
-#         visited[v] = True
-#         path[v] = u
-#         queue.append(v)
+  while queue:
+    u = queue.pop(0)
+    for v, _ in G[u]:
+      if not visited[v]:
+        visited[v] = True
+        path[v] = u
+        queue.append(v)
 
-#   return path
+  return path
 
-# def dfs(G, s):
-#   n = len(G)
-#   path = [-1]*n
-#   visited = [False]*n
+def dfs(G, s):
+  n = len(G)
+  path = [-1]*n
+  visited = [False]*n
+  
+  stack = [s]
+  while stack:
+    u = stack.pop()
+    if not visited[u]:
+      visited[u] = True
+      for v, _ in G[u]:
+        if not visited[v]:
+          path[v] = u
+          stack.append(v)
 
-  # def _dfs(u):
-  #   visited[u] = True
-  #   for v, _ in G[u]:
-  #     if not visited[v]:
-  #       path[v] = u
-  #       _dfs(v)
-
-  # _dfs(s)
-  # return path
+  return path
 
 def dijkstra(G, s):
     n = len(G)
@@ -110,8 +112,8 @@ def graph():
 
 def paths(s, t):
     bestpath, _ = dijkstra(G, s)
-    # path1 = bfs(G, s)
-    # path2 = dfs(G, s)
+    path1 = bfs(G, s)
+    path2 = dfs(G, s)
 
-    # return json.dumps({"bestpath": bestpath, "path1": path1, "path2": path2})
-    return json.dumps({"bestpath": bestpath})
+    return json.dumps({"bestpath": bestpath, "path1": path1, "path2": path2})
+    # return json.dumps({"bestpath": bestpath, "path1": path1})
