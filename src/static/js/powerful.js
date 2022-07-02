@@ -21,6 +21,7 @@
   const extenty = d3.extent(graph.loc, d => d[1]);
   const w = extentx[1] - extentx[0];
   const h = extenty[1] - extenty[0];
+  
 
   const margin = {
     top: 10,

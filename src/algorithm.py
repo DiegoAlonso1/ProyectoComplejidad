@@ -3,6 +3,8 @@ import random as r
 import math
 import heapq as hq
 import numpy as np
+import os
+import csv
 from library.database_api import DB_API
 
 def getWeightByHour(cost, hour):
@@ -10,16 +12,21 @@ def getWeightByHour(cost, hour):
     return cost * hourFactor[hour]
 
 def myGraphCoords():
-  dbApi = DB_API()
-  query = 'SELECT source, table1.x1, table1.y1 FROM hh_2po_4pgr table1 union SELECT target, table2.x2, table2.y2 FROM hh_2po_4pgr table2'
-  rows = dbApi.customQuery(query)
-  nodes_coords = []
-  nodes_coords.append((-12.0459308, -77.0427831))
+  basedir = os.path.abspath(os.path.dirname(__file__))
+  data_file = os.path.join(basedir, 'static/data/nodes_info.csv')
+  with open(data_file, mode ='r')as file:
+    csvFile = csv.reader(file, delimiter=";")
+    nodes_coords = []
+    nodes_coords.append((-12.0459308, -77.0427831))
 
-  for row in rows:
-      nodes_coords.append((row[2], row[1]))
-      
-  dbApi.endDbConnection()
+    i = 0
+    for line in csvFile:
+      if i == 0:
+        i += 1
+        continue
+      source, x, y = line
+      nodes_coords.append((str(y), str(x)))
+      i = i+1
   return nodes_coords
 
 def myGraphNodes():
