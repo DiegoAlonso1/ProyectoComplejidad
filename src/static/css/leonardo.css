@@ -1,12 +1,16 @@
-*,*::before,*::after {
+*,
+*::before,
+*::after {
 	margin: 0;
 	padding: 0;
 	box-sizing: inherit;
 }
+
 html {
 	box-sizing: border-box;
 	font-size: 62.5%;
 }
+
 #box {
 	background: Gainsboro;
 	margin: 0 auto;
@@ -40,5 +44,13 @@ html {
 	visibility: hidden;
 }
 
-/* vim: set tabstop=2:softtabstop=2:shiftwidth=2:noexpandtab */
+footer {
+	background-color: black;
+	min-height: 0em;
+	position: sticky;
+	bottom: 0;
+	width: 100%;
+	color: white;
+}
 
+/* vim: set tabstop=2:softtabstop=2:shiftwidth=2:noexpandtab */
