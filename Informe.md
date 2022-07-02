@@ -71,3 +71,107 @@ Dando como resultado lo siguiente:
 <br />
 
 <img src="./images/elaboracion-grafo2.PNG" width="700px">
+
+<br>
+
+### Visualización de grafo 
+
+<img src="./images/grafo_1era_version.png" width="400px" >
+
+<br>
+
+## Implementación de algorimos
+
+Para esta entrega utilizamos los siguientes 3 algoritmos de ordenamiento
+
+
+Ruta principal
+```python
+def dijkstra(G, s):
+    n = len(G)
+    visited = [False]*n
+    path = [-1]*n
+    cost = [math.inf]*n
+
+    cost[s] = 0
+    pqueue = [(0, s)]
+    while pqueue:
+        g, u = hq.heappop(pqueue)
+        if not visited[u]:
+            visited[u] = True
+            for v, w in G[u]:
+                if not visited[v]:
+                    f = g + w
+                    if f < cost[v]:
+                        cost[v] = f
+                        path[v] = u
+                        hq.heappush(pqueue, (f, v))
+
+    return path, cost
+```
+
+Rutas alternativas 
+```python
+def bfs(G, s):
+  n = len(G)
+  visited = [False]*n
+  path = [-1]*n # parent
+  queue = [s]
+  visited[s] = True
+
+  while queue:
+    u = queue.pop(0)
+    for v, _ in G[u]:
+      if not visited[v]:
+        visited[v] = True
+        path[v] = u
+        queue.append(v)
+
+  return path
+```
+
+
+```python
+def dfs(G, s):
+  n = len(G)
+  path = [-1]*n
+  visited = [False]*n
+  
+  stack = [s]
+  while stack:
+    u = stack.pop()
+    if not visited[u]:
+      visited[u] = True
+      for v, _ in G[u]:
+        if not visited[v]:
+          path[v] = u
+          stack.append(v)
+
+  return path
+```
+
+
+
+<br>
+
+
+## Implementación de interfaz para vizualización 
+
+Para nuestro trabajo final, utilizamos el siguiente repositorio como base para la implementación de interfaz: 
+
+>.- Repositorio: https://github.com/lmcanavals/acomplex/tree/main/tfbase  
+
+Dando como resultado las siguientes imagenes: 
+
+Dibujo del grafo antes
+
+<img src="./images/interfaz_before.png">
+
+Dibujo del grafo despues
+
+<img src="./images/interfaz_after.png">
+
+
+## Enlace de video de exposición
+
+> Video de exposición: 
