@@ -7,20 +7,12 @@
 
   var s = Math.floor(Math.random() * graph.g.length);
   var t = Math.floor(Math.random() * graph.g.length);
-  var hour = 1;
-  const urlpaths = `paths/${s}/${t}/${hour}`;
+  const urlpaths = `paths/${s}/${t}`;
   var paths = await d3.json(urlpaths);
   // console.log('s: ' + s + ', t: ' + t);
   var excludeList = [];
 
   // config
-
-  const width = document.querySelector("#box").clientWidth;
-
-  const extentx = d3.extent(graph.loc, d => d[0]);
-  const extenty = d3.extent(graph.loc, d => d[1]);
-  const w = extentx[1] - extentx[0];
-  const h = extenty[1] - extenty[0];
 
   const margin = {
     top: 10,
@@ -29,8 +21,10 @@
     left: 10
   };
   const box = {
-    width: width,
-    height: width * h / w,
+    width: 1100,
+    height: 1000,
+    bwidth: 1100 - margin.left - margin.right,
+    bheight: 1000 - margin.top - margin.bottom,
   };
 
   // Canvas y elementos
@@ -43,12 +37,22 @@
   ctx.canvas.width = box.width;
   ctx.canvas.height = box.height;
 
+  const extentx = d3.extent(graph.loc, d => d[0]);
+  const extenty = d3.extent(graph.loc, d => d[1]);
+  const w = extentx[1] - extentx[0];
+  const h = extenty[1] - extenty[0];
+
+  let size = 0, xpro = 1, ypro = 1;
+  size = (w > h) ? (box.bwidth - margin.right) : (box.bheight - margin.bottom);
+  xpro = (w > h) ? 1 : (w / h);
+  ypro = (w > h) ? (h / w) : 1;
+
   scalex = d3.scaleLinear()
     .domain(extentx)
-    .range([margin.left, box.width - margin.right]);
+    .range([margin.left, size * xpro]);
   scaley = d3.scaleLinear()
     .domain(extenty)
-    .range([box.height - margin.top, margin.bottom]);
+    .range([size * ypro, margin.top]);
 
   const [lon, lat] = [d => scalex(d[0]), d => scaley(d[1])];
   const x = d => lon(d);
@@ -56,30 +60,24 @@
 
   function render(points, color, lw) {
     ctx.lineWidth = lw;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
+    ctx.beginPath();
+    ctx.strokeStyle = color;
     for (const point of points) {
-      ctx.beginPath();
-      ctx.strokeStyle = color(point);
       ctx.moveTo(x(point[0]), y(point[0]));
       ctx.lineTo(x(point[1]), y(point[1]));
-      ctx.stroke();
     }
+    ctx.stroke();
   }
 
   const edges = [];
+  let i = 0;
   for (const u in graph.g) {
-    for (const [v, w] of graph.g[u]) {
-      edges.push([graph.loc[u], graph.loc[v], w])
+    for (const [v, _] of graph.g[u]) {
+      edges.push([graph.loc[u], graph.loc[v]])
     }
+    i++;
   }
-  const extentw = d3.extent(edges, d => d[2]);
-  console.log('extentw: ' + extentw);
-  const scalecolor = d3.scaleLinear()
-    .domain(extentw)
-    .range([100, 0]);
-  const color = d => `hsla(${scalecolor(d[2])}, 100%, 50%, 0.5)`;
-  render(edges, color, 1)
+  render(edges, 'white', 1)
 
   async function dealWithPath(path, color, lw) {
     excludeList = [];
@@ -97,16 +95,16 @@
       points.push([graph.loc[head], graph.loc[path[head]]]);
       head = path[head];
     }
-    render(points, d => color, lw)
+    render(points, color, lw)
   }
 
-  dealWithPath(paths.path2, "rgba(220,  20, 60, 0.5)", 2)
-  dealWithPath(paths.path1, "rgba(255, 165, 0, 0.5)", 6)
-  dealWithPath(paths.bestpath, "rgba(0, 128, 0, 0.5)", 3)
+  dealWithPath(paths.path2, "purple", 2)
+  dealWithPath(paths.path1, "orange", 6)
+  dealWithPath(paths.bestpath, "darkgreen", 3)
 
   function cleanCanvas() {
     ctx.clearRect(1, 1, box.width, box.height);
-    render(edges, d => 'white', 1)
+    render(edges, 'white', 1)
   }
 
   function drawPoints() {
@@ -168,13 +166,12 @@
   async function onFindBtnClicked() {
     if (searchingOrigin) originBtn.click();
     if (searchingTarget) targetBtn.click();
-    const newUrlpaths = `paths/${s}/${t}/${hour}`;
+    const newUrlpaths = `paths/${s}/${t}`;
     paths = await d3.json(newUrlpaths);
     cleanCanvas();
-    render(edges, color, 1)
-    dealWithPath(paths.path2, "rgba(220,  20, 60, 0.5)", 2)
-    dealWithPath(paths.path1, "rgba(255, 165, 0, 0.5)", 6)
-    dealWithPath(paths.bestpath, "rgba(0, 128, 0, 0.5)", 3)
+    dealWithPath(paths.path2, "purple", 2)
+    dealWithPath(paths.path1, "orange", 6)
+    dealWithPath(paths.bestpath, "darkgreen", 3)
     cleaned = false;
   }
 
@@ -198,10 +195,10 @@
     }
 
     coordsX = d3.scaleLinear()
-      .domain([margin.left, box.width - margin.right])
+      .domain([margin.left, size * xpro])
       .range(extentx);
     coordsY = d3.scaleLinear()
-      .domain([box.height - margin.top, margin.bottom])
+      .domain([size * ypro, margin.top])
       .range(extenty);
 
     if (searchingOrigin) {

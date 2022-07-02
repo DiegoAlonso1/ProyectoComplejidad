@@ -4,8 +4,10 @@ import math
 import heapq as hq
 import numpy as np
 from library.database_api import DB_API
-from library.lima_node_api import getWeightByHour
 
+def getWeightByHour(cost, hour):
+    hourFactor=[0.5833333,1,6.8,12.6,18.4,24.2,30,26,22,18,14,10,9.25,8.5,7.75,7,12.75,18.5,24.25,30,25.16666667,20.333333,15.5,10.6666667]
+    return cost * hourFactor[hour]
 
 def myGraphCoords():
   dbApi = DB_API()
@@ -31,20 +33,6 @@ def myGraphNodes():
 
   dbApi.endDbConnection()
   return sources_targets
-
-# def transformGraph():
-#     n, m = 20, 30
-#     Loc = [(i * 100 - r.randint(145, 155), j * 100 - r.randint(145, 155))
-#            for i in range(1, n + 1) for j in range(1, m + 1)]
-#     G = [[] for _ in range(n * m)]
-#     for i in range(n):
-#         for j in range(m):
-#             adjs = [(i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)]
-#             r.shuffle(adjs)
-#             for u, v in adjs:
-#                 if u >= 0 and u < n and v >= 0 and v < m:
-#                     G[i * m + j].append((u * m + v, r.randint(1, 345353)))
-#     return G, Loc
 
 def bfs(G, s):
   n = len(G)
@@ -80,7 +68,7 @@ def dfs(G, s):
 
   return path
 
-def dijkstra(G, s):
+def dijkstra(G, s, hour=1):
     n = len(G)
     visited = [False]*n
     path = [-1]*n
@@ -93,6 +81,7 @@ def dijkstra(G, s):
         if not visited[u]:
             visited[u] = True
             for v, w in G[u]:
+                w = getWeightByHour(w, hour)
                 if not visited[v]:
                     f = g + w
                     if f < cost[v]:
@@ -110,8 +99,8 @@ def graph():
     return json.dumps({"loc": Loc, "g": G})
 
 
-def paths(s, t):
-    bestpath, _ = dijkstra(G, s)
+def paths(s, t, hour):
+    bestpath, _ = dijkstra(G, s, 1)
     path1 = bfs(G, s)
     path2 = dfs(G, s)
 

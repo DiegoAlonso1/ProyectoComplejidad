@@ -18,17 +18,11 @@ html {
 }
 
 .btn-container {
-	width: 97%;
-	position: fixed;
-	left: 1.5%;
-	bottom: 30px;
-	display: flex;
-	justify-content: space-between;
-}
-
-.btn-right-container {
 	display: flex;
 	gap: 15px;
+	margin-left: 50px;
+	float: left;
+	width: 49%;
 }
 
 .btn {
@@ -46,11 +40,23 @@ html {
 
 footer {
 	background-color: black;
-	min-height: 0em;
 	position: sticky;
 	bottom: 0;
 	width: 100%;
 	color: white;
+}
+
+.footer-container {
+	height: 17%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color:lightblue
+}
+
+.footer-title {
+	margin-left: 20px;
+	color: rgb(0, 98, 255);
 }
 
 /* vim: set tabstop=2:softtabstop=2:shiftwidth=2:noexpandtab */
