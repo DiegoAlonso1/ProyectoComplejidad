@@ -174,4 +174,4 @@ Dibujo del grafo despues
 
 ## Enlace de video de exposición
 
-> Video de exposición: 
+> Video de exposición: https://youtu.be/qil6ue9MIVw

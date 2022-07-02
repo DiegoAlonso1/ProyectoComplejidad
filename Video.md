@@ -1,0 +1,1 @@
+Video de exposición: https://youtu.be/qil6ue9MIVw

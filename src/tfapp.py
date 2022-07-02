@@ -33,3 +33,7 @@ def paths(s, t, hour):
     return app.response_class(response=algorithm.paths(s, t, hour),
                               status=200,
                               mimetype='application/json')
+
+
+if __name__ == "__main__":
+    app.run()
